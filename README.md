@@ -47,7 +47,7 @@ php artisan migrate
 @import './fonts/awesome/awesome-font.css';
 @import './fonts/iransans/iransans-font.css';
 
-@import "./vendor/identifier/identifier";
+@import "./vendor/identifier/identifier.scss";
 ```
 
 * Please note that fonts directories is up to your project structure. change them with your own directories.
