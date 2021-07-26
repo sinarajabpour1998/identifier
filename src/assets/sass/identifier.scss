@@ -1,0 +1,348 @@
+// Bootstrap
+@import  '~bootstrap-v4-rtl/scss/bootstrap-rtl';
+
+// Plugins
+@import "~animate.css/animate.compat.css";
+
+@import '~sweetalert2/src/sweetalert2.scss';
+
+@import "~alertifyjs/build/css/alertify.rtl.min.css";
+@import "~alertifyjs/build/css/themes/bootstrap.rtl.min.css";
+
+@import '~lity/dist/lity.min.css';
+
+/*
+Start default styles
+ */
+html {
+    font-size: 0.8rem;
+}
+
+body {
+    margin: 0px;
+    font-family: iransans !important;
+    direction: rtl !important;
+    text-align: right !important;
+    box-sizing: border-box;
+    max-width: 100%;
+    background-color: rgb(250, 250, 250);
+    overflow-x: hidden;
+    background-size: cover;
+    background-position: 100% 100%;
+    background-repeat: no-repeat;
+}
+
+.auth-wrapper {
+    border-radius: 4px;
+    background-color: rgb(255, 255, 255);
+    width: 100%;
+    display: inline-block;
+}
+
+.auth-wrapper .segment:not(:last-child) {
+    border-bottom: 1px solid rgb(240, 240, 240);
+}
+
+.auth-wrapper .segment {
+    padding: 30px 25px;
+    -webkit-box-pack: justify;
+    justify-content: space-between;
+}
+
+.create-account-text{
+    margin-top: 0.5rem;
+}
+
+.username-field{
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+    height: 35px;
+}
+
+.username-icon{
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+}
+
+.forgot-password{
+    color: rgb(191, 115, 0);
+    appearance: none;
+    border: 0px;
+    background: transparent;
+    user-select: none;
+    text-decoration: none;
+}
+
+.forgot-password:hover{
+    text-decoration: none;
+}
+
+.main-container{
+    margin-top: 10%;
+}
+
+.back-btn{
+    background-color: rgb(249, 249, 249);
+    color: rgb(105, 105, 105);
+    padding: 10px 40px 10px 15px;
+    border-radius: 3px;
+    text-decoration: none;
+    display: inline-block;
+    margin-bottom: 20px;
+    transition: background-color 0.3s ease 0s;
+    font-size: 11px;
+    border: 1px solid rgb(187, 187, 187);
+    position: relative;
+    text-decoration: none !important;
+}
+
+.back-btn:after{
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    transform: translateY(-50%);
+    width: 15px;
+    height: 10px;
+    background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNjguODMyIiBoZWlnaHQ9IjI2OC44MzIiIHZpZXdCb3g9IjAgMCAyNjguODMyIDI2OC44MzIiPjxwYXRoIGZpbGw9IiM2OTY5NjkiIGQ9Ik0yNjUuMTcxIDEyNS41NzdsLTgwLTgwYy00Ljg4MS00Ljg4MS0xMi43OTctNC44ODEtMTcuNjc4IDAtNC44ODIgNC44ODItNC44ODIgMTIuNzk2IDAgMTcuNjc4bDU4LjY2MSA1OC42NjFIMTIuNWMtNi45MDMgMC0xMi41IDUuNTk3LTEyLjUgMTIuNSAwIDYuOTAyIDUuNTk3IDEyLjUgMTIuNSAxMi41aDIxMy42NTRsLTU4LjY1OSA1OC42NjFjLTQuODgyIDQuODgyLTQuODgyIDEyLjc5NiAwIDE3LjY3OCAyLjQ0IDIuNDM5IDUuNjQgMy42NjEgOC44MzkgMy42NjFzNi4zOTgtMS4yMjIgOC44MzktMy42NjFsNzkuOTk4LTgwYzQuODgyLTQuODgyIDQuODgyLTEyLjc5NiAwLTE3LjY3OHoiLz48L3N2Zz4K);
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+    transition: all 200ms ease 0s;
+    text-decoration: none !important;
+}
+
+.head-title{
+    padding: 0px;
+    font-size: 13px;
+    margin: 0px 0px 30px;
+    line-height: 2;
+}
+
+.mobile-reg-text{
+    line-height: 2;
+    display: inline-block;
+    color: black;
+    margin-bottom: 12px;
+}
+
+.icon-size{
+    font-size: 23px;
+}
+
+.sms-icon{
+    display: inline-block;
+    border-radius: 10rem;
+    filter: drop-shadow(rgb(204, 204, 204) 0px 2px 1px) grayscale(1);
+    margin-left: 10px;
+    width: 32px;
+    height: 32px;
+    background: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0OTUuOTY4IDQ5NS45NjgiIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIj48cGF0aCBkPSJNNDIzLjk4NCAwaC0zNTJjLTM1LjI5NiAwLTY0IDI4LjcwNC02NCA2NHYyODhjMCAzNS4yOTYgMjguNzA0IDY0IDY0IDY0djYzLjk2OGExNi4wMiAxNi4wMiAwIDAgMCA5LjIxNiAxNC40OTYgMTYuMjMyIDE2LjIzMiAwIDAgMCA2Ljc4NCAxLjUwNGMzLjY4IDAgNy4zMjgtMS4yNDggMTAuMjQtMy43MTJMMTg5Ljc3NiA0MTZoMjM0LjIwOGMzNS4yOTYgMCA2NC0yOC43MDQgNjQtNjRWNjRjMC0zNS4yOTYtMjguNzA0LTY0LTY0LTY0em0tMzA0IDE5MmMyNi40NjQgMCA0OCAyMS41MzYgNDggNDhzLTIxLjUzNiA0OC00OCA0OGgtMzJjLTguODMyIDAtMTYtNy4xNjgtMTYtMTZzNy4xNjgtMTYgMTYtMTZoMzJjOC44MzIgMCAxNi03LjE2OCAxNi0xNnMtNy4xNjgtMTYtMTYtMTZjLTI2LjQ2NCAwLTQ4LTIxLjUzNi00OC00OHMyMS41MzYtNDggNDgtNDhoMzJjOC44MzIgMCAxNiA3LjE2OCAxNiAxNnMtNy4xNjggMTYtMTYgMTZoLTMyYy04LjgzMiAwLTE2IDcuMTY4LTE2IDE2czcuMTY4IDE2IDE2IDE2em0xNzYgODBjMCA4LjgzMi03LjE2OCAxNi0xNiAxNnMtMTYtNy4xNjgtMTYtMTZ2LTYwLjIyNGwtMS42OTYgMy4zOTJjLTUuNDQgMTAuODQ4LTIzLjIgMTAuODQ4LTI4LjY0IDBsLTEuNjY0LTMuMzkyVjI3MmMwIDguODMyLTcuMTY4IDE2LTE2IDE2cy0xNi03LjE2OC0xNi0xNlYxNDRjMC03LjQyNCA1LjEyLTEzLjg4OCAxMi4zMi0xNS41ODQgNy4xMzYtMS43MjggMTQuNjU2IDEuNzkyIDE3Ljk4NCA4LjQxNmwxNy42OTYgMzUuMzkyIDE3LjY5Ni0zNS4zNmMzLjI5Ni02LjY4OCAxMC42MjQtMTAuMTQ0IDE3Ljk4NC04LjQ0OCA3LjIzMiAxLjY5NiAxMi4zMiA4LjE2IDEyLjMyIDE1LjU4NHYxMjh6bTgwLTgwYzI2LjQ2NCAwIDQ4IDIxLjUzNiA0OCA0OHMtMjEuNTM2IDQ4LTQ4IDQ4aC0zMmMtOC44MzIgMC0xNi03LjE2OC0xNi0xNnM3LjE2OC0xNiAxNi0xNmgzMmM4LjggMCAxNi03LjE2OCAxNi0xNnMtNy4yLTE2LTE2LTE2Yy0yNi40NjQgMC00OC0yMS41MzYtNDgtNDhzMjEuNTM2LTQ4IDQ4LTQ4aDMyYzguODMyIDAgMTYgNy4xNjggMTYgMTZzLTcuMTY4IDE2LTE2IDE2aC0zMmMtOC44IDAtMTYgNy4xNjgtMTYgMTZzNy4yIDE2IDE2IDE2eiIgZmlsbD0iI2JmNzMwMCIvPjwvc3ZnPg==) center center / 19px no-repeat rgb(240, 240, 240);
+    vertical-align: top;
+}
+
+.mobile-code-text{
+    font-size: 1.2em;
+    line-height: 2.5;
+    font-weight: bold;
+    display: inline-block;
+    width: calc(100% - 45px);
+}
+
+.invalid-feedback{
+    display: block;
+}
+
+.otp_timer_text{
+    width: max-content;
+}
+
+.mobile_number{
+    font-weight: bold;
+    color: rgb(206, 21, 23);
+    font-size: 16px;
+}
+
+.segment-colored{
+    background-color: rgb(242, 242, 242);
+}
+
+.not_registered_button{
+    text-decoration: none;
+}
+
+.not_registered_button:hover{
+    text-decoration: none;
+}
+
+.loading_overlay{
+    width: 100%;
+    height: 100%;
+    top: 0px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba($white,.8);
+    z-index: 99;
+    position: absolute;
+}
+
+.recovery_pass_span{
+    padding: 10px 0px;
+    display: inline-block;
+    text-align: right;
+    font-size: 12px;
+    font-weight: 500;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    color: rgb(125, 126, 128);
+    transition: all 300ms ease 0s;
+}
+
+.change_password_btn{
+    width: 100%;
+    font-weight: bold;
+    border: 0px;
+    appearance: none;
+    border-radius: 4px;
+    padding: 13px;
+    margin-top: 20px;
+    transition: all 0.3s ease 0s;
+    color: rgb(255, 255, 255);
+    background: rgb(253, 178, 18);
+    text-decoration: none;
+}
+
+.change_password_btn:hover{
+    color: white;
+    background: rgb(210, 145, 13);
+    text-decoration: none;
+}
+
+.tip{
+    margin-top: 5px;
+    font-size: 10px;
+    color: rgb(111, 114, 133);
+    align-self: baseline;
+}
+
+.login_via_password{
+    color: rgb(68, 68, 68);
+    position: relative;
+    appearance: none;
+    background-color: transparent;
+    transition: color 200ms ease 0s;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.login_via_password:hover{
+    text-decoration: none;
+}
+
+.login_email_via_password{
+    color: rgb(68, 68, 68);
+    position: relative;
+    appearance: none;
+    background-color: transparent;
+    transition: color 200ms ease 0s;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.login_email_via_password:hover{
+    text-decoration: none;
+}
+
+.lock-icon{
+    width: 20px;
+    height: 20px;
+    margin-left: 15px;
+    fill: rgb(68, 68, 68);
+    display: inline-block;
+    vertical-align: middle;
+}
+
+/*
+   start golestan changes
+ */
+
+.animate-btn  {
+    position: relative;
+    padding: 0;
+    border: 0;
+    span {
+        z-index: 2;
+        font-size: 1rem;
+        display: inline-block;
+        &.text{
+            padding: .6rem 1rem;
+        }
+        &.fa{
+            min-width: 38px;
+            text-align: center;
+        }
+    }
+    &:hover{
+        .overlay{
+            width: 100%;
+            transition: .5s ease;
+        }
+    }
+    .overlay{
+        position: absolute;
+        left: 0;
+        right: auto;
+        bottom: 0;
+        height: 100%;
+        width: 38px;
+        background-color: rgba($primary , 0.07);
+        transition: .5s ease;
+        z-index: 0;
+    }
+}
+.group-input-holder, .animate-btn  {
+    @media screen and (max-width: 768px){
+        margin-top: 0.625rem;
+    }
+}
+.segment {
+    .segment-content {
+        display: flex;
+        justify-content: space-between;
+        @media screen and (max-width: 768px){
+            flex-direction: column;
+        }
+        .fa-display, .overlay {
+            @media screen and (max-width: 1200px){
+                display: none;
+            }
+        }
+    }
+    .form-group {
+        .group {
+            display: flex;
+            justify-content: space-between;
+        }
+        .group-input-holder {
+            display: flex;
+            width: 80%;
+            @media screen and (max-width: 768px){
+                width: 100%;
+            }
+        }
+        .timer-register {
+            display: flex;
+            align-items: center;
+            margin-top: 0.625rem;
+        }
+    }
+}
+
+/*
+   end golestan changes
+ */
