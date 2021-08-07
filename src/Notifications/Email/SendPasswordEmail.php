@@ -48,7 +48,7 @@ class SendPasswordEmail extends Notification
             ->greeting('با سلام و عرض ادب')
             ->salutation('اراتمند شما وبسایت ' . config('identifier.site_title'))
             ->subject('کد یکبارمصرف حساب کاربری')
-            ->line('لطفا برای تغییر رمزعبور حساب کاربری خود، از کد زیر استفاده نمایید')
+            ->line('لطفا برای تایید حساب کاربری خود، از کد زیر استفاده نمایید')
             ->line($this->password);
     }
 
