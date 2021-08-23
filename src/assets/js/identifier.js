@@ -19,6 +19,7 @@ require('lity/dist/lity.min');
 require('jquery-ui/ui/effects/effect-slide');
 
 const previous_pages = [];
+const url_address = new URL(window.location.href);
 
 // forgot password handler
 $('.open_recovery_not_reg').on('click', function (e) {
@@ -44,23 +45,23 @@ $('.forget_action').on('click', function (e) {
                 if (response.status === 200){
                     $('.user_info').html('('+ username_input +')');
                     send_otp($('.recovery_timer'));
-                    alertify.success(response.message);
+                    toastr.success(response.message);
                     openRecoveryCodePage('recovery_code', 'recovery');
                 }
                 stopLoading();
             }).fail(function () {
                 stopLoading();
-                alertify.error('خطای غیره منتظره‌ای رخ داده.');
+                toastr.error('خطای غیره منتظره‌ای رخ داده.');
             });
         }else {
             stopLoading();
             show_error_messages(response);
-            alertify.error(response.message);
+            toastr.error(response.message);
         }
     }).fail(function (response) {
         stopLoading();
         show_error_messages(response);
-        alertify.error('لطفا خطاهای فرم را بررسی کنید.');
+        toastr.error('لطفا خطاهای فرم را بررسی کنید.');
     });
 });
 
@@ -72,18 +73,18 @@ $('.recovery_timer').on('click', function (e) {
             stopLoading();
             if (response.status === 200){
                 send_otp($('.recovery_timer'));
-                alertify.success(response.message);
+                toastr.success(response.message);
             }else {
-                alertify.error(response.message);
+                toastr.error(response.message);
             }
         }).fail(function () {
             stopLoading();
             show_error_messages(response);
-            alertify.error('لطفا خطاهای فرم را بررسی کنید.');
+            toastr.error('لطفا خطاهای فرم را بررسی کنید.');
         });
     }).fail(function () {
         stopLoading();
-        alertify.error('خطای غیره منتظره‌ای رخ داده.');
+        toastr.error('خطای غیره منتظره‌ای رخ داده.');
     });
 });
 
@@ -95,26 +96,26 @@ $('.confirm_recovery_code').on('click', function (e) {
         confirmRecoveryCode(data.cookies.identifier_username,
             confirm_code, data.cookies.identifier_recovery_type)
             .done(function (code_result) {
-            hide_error_messages();
-            if (code_result.status === 200){
-                setCookie('identifier_verified_recovery', 'user_verified').done(function () {
-                    openChangePasswordPage('change_password', 'recovery_code');
-                }).fail(function () {
+                hide_error_messages();
+                if (code_result.status === 200){
+                    setCookie('identifier_verified_recovery', 'user_verified').done(function () {
+                        openChangePasswordPage('change_password', 'recovery_code');
+                    }).fail(function () {
+                        stopLoading();
+                        toastr.error('خطای غیره منتظره‌ای رخ داده.');
+                    });
+                }else {
+                    toastr.error(code_result.message);
                     stopLoading();
-                    alertify.error('خطای غیره منتظره‌ای رخ داده.');
-                });
-            }else {
-                alertify.error(code_result.message);
-                stopLoading();
-            }
-        }).fail(function (response) {
+                }
+            }).fail(function (response) {
             stopLoading();
             show_error_messages(response);
-            alertify.error('لطفا خطاهای فرم را بررسی کنید.');
+            toastr.error('لطفا خطاهای فرم را بررسی کنید.');
         });
     }).fail(function () {
         stopLoading();
-        alertify.error('خطای غیره منتظره‌ای رخ داده.');
+        toastr.error('خطای غیره منتظره‌ای رخ داده.');
     });
 });
 
@@ -135,14 +136,14 @@ $('.change_password_btn').on('click', function (e) {
             if (response.status === 200){
                 window.location = response.url;
             }else {
-                alertify.error(response.message);
+                toastr.error(response.message);
                 stopLoading();
             }
         },
         error: function (response) {
             stopLoading();
             show_error_messages(response);
-            alertify.error('لطفا خطاهای فرم را بررسی کنید.');
+            toastr.error('لطفا خطاهای فرم را بررسی کنید.');
         }
     });
 });
@@ -169,7 +170,7 @@ $('.login_with_password').on('click', function (e) {
     let password_input = $('.password_input').val();
     $.ajax({
         type: "post",
-        url: baseUrl + '/auth/login/password',
+        url: baseUrl + getFullUrl('/auth/login/password'),
         dataType: 'json',
         data: {
             'password': password_input,
@@ -178,14 +179,14 @@ $('.login_with_password').on('click', function (e) {
             if (response.status === 200){
                 window.location = response.url;
             }else {
-                alertify.error(response.message);
+                toastr.error(response.message);
                 stopLoading();
             }
         },
         error: function (response) {
             stopLoading();
             show_error_messages(response);
-            alertify.error('لطفا خطاهای فرم را بررسی کنید.');
+            toastr.error('لطفا خطاهای فرم را بررسی کنید.');
         }
     });
 });
@@ -233,7 +234,7 @@ $('.account_login').on('click', function (e) {
                         slide_element('default', 'not_registered');
                         previous_pages.push('default');
                     }else {
-                        alertify.error('این ایمیل درسیستم ثبت نشده.');
+                        toastr.error('این ایمیل درسیستم ثبت نشده.');
                     }
                     stopLoading();
                 }else {
@@ -245,16 +246,16 @@ $('.account_login').on('click', function (e) {
                 }
             }).fail(function () {
                 stopLoading();
-                alertify.error('خطای غیره منتظره‌ای رخ داده.');
+                toastr.error('خطای غیره منتظره‌ای رخ داده.');
             });
         }else {
             stopLoading();
-            alertify.error(data.message);
+            toastr.error(data.message);
         }
     }).fail(function (response) {
         stopLoading();
         show_error_messages(response);
-        alertify.error('لطفا خطاهای فرم را بررسی کنید.');
+        toastr.error('لطفا خطاهای فرم را بررسی کنید.');
     });
 });
 
@@ -269,17 +270,17 @@ $('.confirm_email_code').on('click', function (e) {
                 if (code_result.status === 200){
                     window.location = code_result.url;
                 }else {
-                    alertify.error(code_result.message);
+                    toastr.error(code_result.message);
                     stopLoading();
                 }
             }).fail(function (response) {
             stopLoading();
             show_error_messages(response);
-            alertify.error('لطفا خطاهای فرم را بررسی کنید.');
+            toastr.error('لطفا خطاهای فرم را بررسی کنید.');
         });
     }).fail(function (data) {
         stopLoading();
-        alertify.error('خطای غیره منتظره‌ای رخ داده.');
+        toastr.error('خطای غیره منتظره‌ای رخ داده.');
     });
 });
 
@@ -295,14 +296,14 @@ function send_email_handler(username, current_page, previous_page) {
         if (response.status === 200){
             $('.user_info').html('('+ username +')');
             send_otp($('.recovery_timer'));
-            alertify.success(response.message);
+            toastr.success(response.message);
             change_url('','','/auth/' + current_page);
             slide_element(previous_page, current_page);
             previous_pages.push(previous_page);
             stopLoading();
         }else {
             stopLoading();
-            alertify.error(response.message);
+            toastr.error(response.message);
         }
     }).fail(function (response) {
         stopLoading();
@@ -313,7 +314,7 @@ function send_email_handler(username, current_page, previous_page) {
             show_error_messages(response);
             msg = 'خطای غیره منتظره‌ای رخ داده.';
         }
-        alertify.error(msg);
+        toastr.error(msg);
     });
 }
 
@@ -322,7 +323,7 @@ function send_code_handler(mobile_num, current_page, previous_page) {
         setCookie('identifier_username', mobile_num).done(function () {
             if (code_result.status === 200){
                 send_otp($('.otp_timer'));
-                alertify.success(code_result.message);
+                toastr.success(code_result.message);
                 $('.mobile_num').html('(' + mobile_num + ')');
                 stopLoading();
                 change_url('','','/auth/code');
@@ -330,11 +331,11 @@ function send_code_handler(mobile_num, current_page, previous_page) {
                 previous_pages.push(previous_page);
             }else {
                 stopLoading();
-                alertify.error(code_result.message);
+                toastr.error(code_result.message);
             }
         }).fail(function () {
             stopLoading();
-            alertify.error('خطای غیره منتظره‌ای رخ داده.');
+            toastr.error('خطای غیره منتظره‌ای رخ داده.');
         });
     }).fail(function (response) {
         stopLoading();
@@ -345,7 +346,7 @@ function send_code_handler(mobile_num, current_page, previous_page) {
             show_error_messages(response);
             msg = 'لطفا خطاهای فرم را بررسی کنید.';
         }
-        alertify.error(msg);
+        toastr.error(msg);
     });
 }
 
@@ -361,17 +362,17 @@ $('.confirm_sms_code').on('click', function (e) {
             if (code_result.status === 200){
                 window.location = code_result.url;
             }else {
-                alertify.error(code_result.message);
+                toastr.error(code_result.message);
                 stopLoading();
             }
         }).fail(function (response) {
             stopLoading();
             show_error_messages(response);
-            alertify.error('لطفا خطاهای فرم را بررسی کنید.');
+            toastr.error('لطفا خطاهای فرم را بررسی کنید.');
         });
     }).fail(function () {
         stopLoading();
-        alertify.error('خطای غیره منتظره‌ای رخ داده.');
+        toastr.error('خطای غیره منتظره‌ای رخ داده.');
     });
 });
 
@@ -383,9 +384,9 @@ $('.otp_timer').on('click', function (e) {
             hide_error_messages();
             if (code_result.status === 200){
                 send_otp($('.otp_timer'));
-                alertify.success(code_result.message);
+                toastr.success(code_result.message);
             }else {
-                alertify.error(code_result.message);
+                toastr.error(code_result.message);
             }
             stopLoading();
         }).fail(function () {
@@ -397,11 +398,11 @@ $('.otp_timer').on('click', function (e) {
                 show_error_messages(response);
                 msg = 'لطفا خطاهای فرم را بررسی کنید.';
             }
-            alertify.error(msg);
+            toastr.error(msg);
         });
     }).fail(function () {
         stopLoading();
-        alertify.error('خطای غیره منتظره‌ای رخ داده.');
+        toastr.error('خطای غیره منتظره‌ای رخ داده.');
     });
 });
 
@@ -413,12 +414,11 @@ $('.create_new_account').on('click', function (e) {
 });
 
 let perv_page = '';
-var url = '';
 $('.back-btn').on('click', function (e) {
     e.preventDefault();
-    url = window.location.href.replace(/\/$/, '');
-    page_type = url.substring(url.lastIndexOf('/') + 1);
-    if (page_type === 'default'){
+    let page_url = window.location.pathname;
+    let page_type = page_url.replace('/auth/', '');
+    if (page_type === '/auth/default'){
         window.location = '/';
     }else {
         perv_page = previous_pages.pop();
@@ -431,19 +431,26 @@ $('.back-btn').on('click', function (e) {
 // start helper functions
 
 function slide_element(hide,show) {
-    $('.' + hide).hide('slide', { direction: "right" }, function(){
-        $('.' + show).show("slide", { direction: "left" });
-    });
+    $('.' + hide).hide();
+    $('.' + show).show();
 }
 
 function back_slide_element(hide,show) {
-    $('.' + hide).hide('slide', { direction: "left" }, function(){
-        $('.' + show).show("slide", { direction: "right" });
-    });
+    $('.' + hide).hide();
+    $('.' + show).show();
 }
 
 function change_url(data,title,url) {
-    window.history.pushState(data, title, url);
+    window.history.pushState(data, title, getFullUrl(url));
+}
+
+function getFullUrl(url) {
+    let url_param = url_address.searchParams.get("back");
+    let new_url = url;
+    if (url_param !== null){
+        new_url = url + '?back=' + url_param;
+    }
+    return new_url;
 }
 
 function hide_error_messages(){
@@ -584,7 +591,7 @@ function forgetCookie(cookieName) {
 function confirmCode(mobile,code) {
     return $.ajax({
         type: "post",
-        url: baseUrl + '/auth/confirm/code',
+        url: baseUrl + getFullUrl('/auth/confirm/code'),
         dataType: 'json',
         data: {
             'mobile': mobile,
@@ -596,7 +603,7 @@ function confirmCode(mobile,code) {
 function confirmRecoveryCode(username,code,type) {
     return $.ajax({
         type: "post",
-        url: baseUrl + '/auth/confirm/recovery',
+        url: baseUrl + getFullUrl('/auth/confirm/recovery'),
         dataType: 'json',
         data: {
             'username': username,
@@ -609,7 +616,7 @@ function confirmRecoveryCode(username,code,type) {
 function confirmEmailCode(username,code) {
     return $.ajax({
         type: "post",
-        url: baseUrl + '/auth/confirm/email/code',
+        url: baseUrl + getFullUrl('/auth/confirm/email/code'),
         dataType: 'json',
         data: {
             'username': username,

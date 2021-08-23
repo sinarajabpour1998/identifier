@@ -101,6 +101,80 @@ php artisan config:clear
 
 - Done !
 
+###Features :
+
+- Dynamic site name and terms url (change via config file)
+* configuration :
+```php
+    return[
+    // other codes ...
+    
+    // the title of site (this will be used in title and help titles)
+    'site_title' => env('APP_NAME', 'پیش فرض'),
+
+    // full url of terms page (this will be used in register page)
+    'terms_url' => 'https://test.com/',
+    
+    // other codes ...
+    ];
+```
+
+- Dynamic redirect url after login for separate admins and users (change via config file)
+* configuration :
+```php
+    return[
+    // other codes ...
+    
+    // admin login redirect route name
+    'admin_login_redirect' => 'admin',
+
+    // user login redirect route name
+    'user_login_redirect' => 'home',
+    
+    // other codes ...
+    ];
+```
+
+- Dynamic css and js path
+* configuration :
+You can change anything in published sass and js files and move them into 
+  desired location, then you can change the files' location in config file
+  
+```php
+    return[
+    // other codes ...
+    
+    // where did you required the identifier.scss file ?
+    // this file must be included in webpack.js as well
+    'css_public_path' => 'css/auth.css',
+
+    // where did you required the identifier.js file ?
+    // this file must be included in webpack.js as well
+    'js_public_path' => 'js/auth.js',
+    
+    // other codes ...
+    ];
+```
+
+- OTP code length
+* configuration :
+```php
+    return[
+    // other codes ...
+    
+    // OTP codes digit, by default it's 6-digit (secure and standard)
+    'otp_digit' => 6,
+    
+    // other codes ...
+    ];
+```
+  
+- Redirect users to specific location after login , registration or account recovery by url (New feature since 1.3 release)
+* usage :
+```bash
+https://example.com/auth/default?back=https://example.com/cart/confirm
+```
+
 ###Requirements :
 
 - PHP v7.0 or above

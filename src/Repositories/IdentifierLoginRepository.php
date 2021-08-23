@@ -475,4 +475,18 @@ class IdentifierLoginRepository
         }
         return false;
     }
+
+    public function redirectUserUrl($result)
+    {
+        if (request()->has('back') && request('back') != ''){
+            $url = request('back');
+        }else{
+            if ($result->user->is_admin == 1){
+                $url = route(config('identifier.admin_login_redirect'));
+            }else{
+                $url = route(config('identifier.user_login_redirect'));
+            }
+        }
+        return $url;
+    }
 }

@@ -48,11 +48,7 @@ class LoginController extends Controller
         if ($result->status == 200){
             $attempLogin = IdentifierLoginFacade::attempLogin($result->user);
             if ($attempLogin->status == 200){
-                if ($result->user->is_admin == 1){
-                    $url = route(config('identifier.admin_login_redirect'));
-                }else{
-                    $url = route(config('identifier.user_login_redirect'));
-                }
+                $url = IdentifierLoginFacade::redirectUserUrl($result);
                 return json_encode([
                     'status' => $result->status,
                     'message' => $result->message,
@@ -188,11 +184,7 @@ class LoginController extends Controller
             $result->message = 'کاربر پیدا نشد.';
         }elseif ($result->status == 200){
             $result = IdentifierLoginFacade::loginViaEmail($request->username);
-            if ($result->user->is_admin == 1){
-                $url = route(config('identifier.admin_login_redirect'));
-            }else{
-                $url = route(config('identifier.user_login_redirect'));
-            }
+            $url = IdentifierLoginFacade::redirectUserUrl($result);
         }
         return json_encode([
             'status' => $result->status,
@@ -223,11 +215,7 @@ class LoginController extends Controller
             $result->status = 400;
             $result->message = 'کاربر پیدا نشد.';
         }else{
-            if ($result->user->is_admin == 1){
-                $url = route(config('identifier.admin_login_redirect'));
-            }else{
-                $url = route(config('identifier.user_login_redirect'));
-            }
+            $url = IdentifierLoginFacade::redirectUserUrl($result);
         }
         return json_encode([
             'status' => $result->status,
@@ -245,11 +233,7 @@ class LoginController extends Controller
         $url = '';
         $result = IdentifierLoginFacade::loginViaPassword($username,$request->password);
         if ($result->status == 200){
-            if ($result->user->is_admin == 1){
-                $url = route(config('identifier.admin_login_redirect'));
-            }else{
-                $url = route(config('identifier.user_login_redirect'));
-            }
+            $url = IdentifierLoginFacade::redirectUserUrl($result);
         }
         return json_encode([
             'status' => $result->status,

@@ -19,6 +19,7 @@ namespace Sinarajabpour1998\Identifier\Facades;
  * @method static array changePasswordViaEmail()
  * @method static array loginViaPassword()
  * @method static array loginViaEmail()
+ * @method static array redirectUserUrl($result)
  *
  * @see \Sinarajabpour1998\Identifier\Repositories\IdentifierLoginRepository
  */
