@@ -418,7 +418,7 @@ $('.back-btn').on('click', function (e) {
     e.preventDefault();
     let page_url = window.location.pathname;
     let page_type = page_url.replace('/auth/', '');
-    if (page_type === '/auth/default'){
+    if (page_type === 'default'){
         window.location = '/';
     }else {
         perv_page = previous_pages.pop();
