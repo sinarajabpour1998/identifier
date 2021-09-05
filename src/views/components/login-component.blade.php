@@ -83,7 +83,7 @@
                         <div class="segment">
                             <div class="row">
                                 <div class="col-md-12">
-                                    <h4 class="head-title">{{ request()->cookie('identifier_previous_page') == 'default' ? ' ورود به' : 'ثبت‌نام در ' }} {{ config('identifier.site_title') }}</h4>
+                                    <h4 class="head-title">ورود به {{ config('identifier.site_title') }}</h4>
                                     <div class="">
                                         <span class="mobile-code-text">
                                             <i class="sms-icon"></i>
