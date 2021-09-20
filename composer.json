@@ -14,7 +14,7 @@
         "php": "7.1.*|7.2.*|7.3.*|7.4.*|8.*",
         "laravel/framework": "7.*|8.*",
         "sinarajabpour1998/notifier": "2.*",
-        "va/cutlet-helper": "1.*"
+        "sinarajabpour1998/alpha-helper": "1.*"
     },
     "autoload": {
         "psr-4": {
