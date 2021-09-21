@@ -27,5 +27,7 @@ return [
     'otp_digit' => 6,
 
     // User Model class path
-    'user_model' => \App\Models\User::class
+    'user_model' => \App\Models\User::class,
+
+    'encryption' => true
 ];

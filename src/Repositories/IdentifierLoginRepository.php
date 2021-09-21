@@ -293,13 +293,16 @@ class IdentifierLoginRepository
 
     protected function createOrExistUser($mobile)
     {
-        $user_object = $this->user()::query()->where('mobile', '=', $mobile);
+        $encrypted_mobile = $this->prepareEncrypted($mobile);
+        $mobile_key = $this->prepareHash($mobile);
+        $user_object = $this->user()::query()->where('mobile_key', '=', $mobile_key);
         if ($user_object->count() > 0){
             return $user_object->first();
         }else{
             $user_object = $this->user()->fill([
                 'username' => stringToken(8, 'abcdefg123456789'),
-                'mobile' => $mobile,
+                'mobile' => $encrypted_mobile,
+                'mobile_key' => $mobile_key,
                 'email' => null,
                 'two_factor_status' => 'off',
                 'user_type' => 'other'
@@ -312,7 +315,8 @@ class IdentifierLoginRepository
 
     protected function existUserEmail($email)
     {
-        $user_object = $this->user()::query()->where('email', '=', $email);
+        $email = $this->prepareHash($email);
+        $user_object = $this->user()::query()->where('email_key', '=', $email);
         if ($user_object->count() > 0){
             return (object) [
                 'user' => $user_object->first(),
@@ -328,7 +332,8 @@ class IdentifierLoginRepository
 
     protected function existUserMobile($mobile)
     {
-        $user_object = $this->user()::query()->where('mobile', '=', $mobile);
+        $mobile = $this->prepareHash($mobile);
+        $user_object = $this->user()::query()->where('mobile_key', '=', $mobile);
         if ($user_object->count() > 0){
             return (object) [
                 'user' => $user_object->first(),
@@ -373,6 +378,7 @@ class IdentifierLoginRepository
 
     protected function checkIfOtpLogExpired($otp_code,$mobile,$user)
     {
+        $mobile = $this->prepareDecrypted($mobile);
         $otp = $this->getOtpLog($otp_code,$mobile);
         if (is_null($otp)){
             return 'not_valid';
@@ -438,8 +444,10 @@ class IdentifierLoginRepository
 
     public function checkMobileExist($mobile)
     {
+        $mobile = $this->prepareHash($mobile);
         $user_object = $this->user()::query()
-            ->where('mobile', '=', $mobile)->where('email_verified_at', '!=', null);
+            ->where('mobile_key', '=', $mobile)
+            ->where('email_verified_at', '!=', null);
         if ($user_object->count() > 0){
             return 'registered';
         }else{
@@ -449,8 +457,9 @@ class IdentifierLoginRepository
 
     public function checkEmailExist($email)
     {
+        $email = $this->prepareHash($email);
         $user_object = $this->user()::query()
-            ->where('email', '=', $email)->where('email_verified_at', '!=', null);
+            ->where('email_key', '=', $email)->where('email_verified_at', '!=', null);
         if ($user_object->count() > 0){
             return 'registered';
         }else{
@@ -488,5 +497,32 @@ class IdentifierLoginRepository
             }
         }
         return $url;
+    }
+
+    protected function prepareHash($string)
+    {
+        $data = $string;
+        if (config('identifier.encryption')) {
+            $data = makeHash($string);
+        }
+        return $data;
+    }
+
+    protected function prepareEncrypted($string)
+    {
+        $data = $string;
+        if (config('identifier.encryption')) {
+            $data = encryptString($string);
+        }
+        return $data;
+    }
+
+    protected function prepareDecrypted($string)
+    {
+        $data = $string;
+        if (config('identifier.encryption')) {
+            $data = decryptString($string);
+        }
+        return $data;
     }
 }
