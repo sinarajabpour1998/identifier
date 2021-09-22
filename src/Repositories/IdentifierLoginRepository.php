@@ -249,13 +249,14 @@ class IdentifierLoginRepository
 
     public function loginViaPassword($username, $password)
     {
-        $type = 'mobile';
+        $type = 'mobile_key';
         $checkUser = $this->existUserMobile($username);
         if ($checkUser->status == 404){
             $checkUser = $this->existUserEmail($username);
-            $type = 'email';
+            $type = 'email_key';
         }
         if ($checkUser->status == 200){
+            $username = $this->prepareHash($username);
             if(Auth::attempt([
                 $type => $username,
                 'password' => $password
