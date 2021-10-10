@@ -7,6 +7,14 @@ use Sinarajabpour1998\Identifier\Facades\IdentifierLoginFacade;
 use Sinarajabpour1998\Identifier\Http\Requests\ChangePasswordRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Sinarajabpour1998\Identifier\Http\Requests\CheckMobileRequest;
+use Sinarajabpour1998\Identifier\Http\Requests\CheckUsernameRequest;
+use Sinarajabpour1998\Identifier\Http\Requests\ConfirmCodeRequest;
+use Sinarajabpour1998\Identifier\Http\Requests\ConfirmEmailCodeRequest;
+use Sinarajabpour1998\Identifier\Http\Requests\ConfirmRecoveryCodeRequest;
+use Sinarajabpour1998\Identifier\Http\Requests\LoginViaEmailOrMobileRequest;
+use Sinarajabpour1998\Identifier\Http\Requests\SendCodeRequest;
+use Sinarajabpour1998\Identifier\Http\Requests\SetCookieRequest;
 
 class LoginController extends Controller
 {
@@ -20,13 +28,8 @@ class LoginController extends Controller
         ]);
     }
 
-    public function sendCode(Request $request)
+    public function sendCode(SendCodeRequest $request)
     {
-        $request->validate([
-            'mobile' => ['required', 'mobile']
-        ],[
-            'mobile.required' => 'فیلد موبایل الزامی است.'
-        ]);
         $result = IdentifierLoginFacade::sendSMS($request->mobile);
         return json_encode([
             'status' => $result['status'],
@@ -34,15 +37,8 @@ class LoginController extends Controller
         ]);
     }
 
-    public function confirmCode(Request $request)
+    public function confirmCode(ConfirmCodeRequest $request)
     {
-        $request->validate([
-            'mobile' => ['required', 'mobile'],
-            'code' => ['required']
-        ],[
-            'mobile.required' => 'فیلد موبایل الزامی است.',
-            'code.required' => 'فیلد کد تایید الزامی است.'
-        ]);
         $url = '';
         $result = IdentifierLoginFacade::confirmSMS($request->mobile, $request->code);
         if ($result->status == 200){
@@ -63,7 +59,7 @@ class LoginController extends Controller
         }
     }
 
-    public function checkMobile(Request $request)
+    public function checkMobile(CheckMobileRequest $request)
     {
         $request->validate([
             'mobile' => ['required', 'mobile']
@@ -76,13 +72,8 @@ class LoginController extends Controller
         ]);
     }
 
-    public function checkRegisteredUser(Request $request)
+    public function checkRegisteredUser(LoginViaEmailOrMobileRequest $request)
     {
-        $request->validate([
-            'username_input' => ['required', 'string']
-        ],[
-            'username_input.required' => 'فیلد موبایل یا ایمیل الزامی است.'
-        ]);
         $type = 'undefined';
         $message = '';
         $result = array();
@@ -109,7 +100,7 @@ class LoginController extends Controller
         ]);
     }
 
-    public function checkUsername(Request $request)
+    public function checkUsername(CheckUsernameRequest $request)
     {
         $request->validate([
             'username' => ['required', 'string']
@@ -138,17 +129,8 @@ class LoginController extends Controller
         ]);
     }
 
-    public function confirmRecoveryCode(Request $request)
+    public function confirmRecoveryCode(ConfirmRecoveryCodeRequest $request)
     {
-        $request->validate([
-            'username' => ['required', 'string'],
-            'code' => ['required'],
-            'type' => ['required', 'in:email,mobile']
-        ],[
-            'username.required' => 'فیلد نام کاربری الزامی است.',
-            'code.required' => 'فیلد کد تایید الزامی است.',
-            'type.required' => 'فیلد نوع بازیابی الزامی است.',
-        ]);
         $result = (object) array();
         if ($request->type == 'mobile'){
             $result = IdentifierLoginFacade::confirmSMS($request->username, $request->code, 'recovery_mode');
@@ -166,16 +148,8 @@ class LoginController extends Controller
         ]);
     }
 
-    public function confirmEmailCode(Request $request)
+    public function confirmEmailCode(ConfirmEmailCodeRequest $request)
     {
-        $request->validate([
-            'username' => ['required', 'email'],
-            'code' => ['required']
-        ],[
-            'username.required' => 'فیلد نام کاربری الزامی است.',
-            'username.email' => 'تنها ایمیل مورد قبول است.',
-            'code.required' => 'فیلد کد تایید الزامی است.',
-        ]);
         $result = (object) array();
         $url = '';
         $result = IdentifierLoginFacade::confirmEmail($request->username, $request->code);
@@ -253,11 +227,7 @@ class LoginController extends Controller
         return redirect()->route('home');
     }
 
-    public function setCookie(Request $request){
-        $request->validate([
-            'cookie_name' => ['required','string'],
-            'cookie_value' => ['required','string'],
-        ]);
+    public function setCookie(SetCookieRequest $request){
         return response()
             ->json(['success' => true], 200)
             ->withCookie(cookie($request->cookie_name, $request->cookie_value, 120));
