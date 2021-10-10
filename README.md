@@ -180,4 +180,4 @@ https://example.com/auth/default?back=https://example.com/cart/confirm
 - PHP v7.0 or above
 - Laravel v7.0 or above
 - sinarajabpour1998/notifier package [packagist link](https://packagist.org/packages/sinarajabpour1998/notifier)
-- va/cutlet-helper package [packagist link](https://packagist.org/packages/va/cutlet-helper)
+- sinarajabpour1998/alpha-helper package [packagist link](https://packagist.org/packages/sinarajabpour1998/alpha-helper)
