@@ -267,10 +267,6 @@ body {
     vertical-align: middle;
 }
 
-/*
-   start golestan changes
- */
-
 .animate-btn  {
     position: relative;
     padding: 0;
@@ -343,6 +339,37 @@ body {
     }
 }
 
-/*
-   end golestan changes
- */
+// start mobile styles
+#basic-addon1 {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+@media (max-width: 992px) {
+    .create-account-text {
+        margin-bottom: 20px;
+    }
+    .login-if-exist{
+        margin-bottom: 10px;
+    }
+    .account_login{
+        margin-top: 20px;
+    }
+    .username-field{
+        line-height: 2.4;
+    }
+    .code_step{
+        margin-top: 20px;
+    }
+    .forget_action{
+        margin-top: 20px;
+    }
+    .confirm_sms_code{
+        margin-top: 20px;
+    }
+    .login_with_password{
+        margin-top: 20px;
+        margin-right: 0 !important;
+    }
+}
+// end mobile styles
