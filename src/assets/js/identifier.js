@@ -5,10 +5,6 @@ $.ajaxSetup({
     }
 });
 
-$(function () {
-    $('[data-toggle="tooltip"]').tooltip();
-});
-
 // Plugins
 window.Swal = require('sweetalert2');
 
@@ -17,6 +13,14 @@ window.alertify = require('alertifyjs/build/alertify.min');
 require('lity/dist/lity.min');
 
 require('jquery-ui/ui/effects/effect-slide');
+
+$(function () {
+    $('.form-control').on('keydown', function(e){
+        if(e.keyCode === 13){
+            $(this).closest('.segment').find('.primary-btn').trigger('click');
+        }
+    });
+});
 
 const previous_pages = [];
 const url_address = new URL(window.location.href);
@@ -60,8 +64,14 @@ $('.forget_action').on('click', function (e) {
         }
     }).fail(function (response) {
         stopLoading();
-        show_error_messages(response);
-        toastr.error('لطفا خطاهای فرم را بررسی کنید.');
+        let msg = '';
+        if (response.status === 0){
+            msg = 'لطفا اتصال اینترنت را بررسی کنید.';
+        }else{
+            show_error_messages(response);
+            msg = 'لطفا خطاهای فرم را بررسی کنید.';
+        }
+        toastr.error(msg);
     });
 });
 
@@ -82,9 +92,15 @@ $('.recovery_timer').on('click', function (e) {
             show_error_messages(response);
             toastr.error('لطفا خطاهای فرم را بررسی کنید.');
         });
-    }).fail(function () {
+    }).fail(function (response) {
         stopLoading();
-        toastr.error('خطای غیره منتظره‌ای رخ داده.');
+        let msg = '';
+        if (response.status === 0){
+            msg = 'لطفا اتصال اینترنت را بررسی کنید.';
+        }else{
+            msg = 'خطای غیره منتظره‌ای رخ داده.';
+        }
+        toastr.error(msg);
     });
 });
 
@@ -113,9 +129,15 @@ $('.confirm_recovery_code').on('click', function (e) {
             show_error_messages(response);
             toastr.error('لطفا خطاهای فرم را بررسی کنید.');
         });
-    }).fail(function () {
+    }).fail(function (response) {
         stopLoading();
-        toastr.error('خطای غیره منتظره‌ای رخ داده.');
+        let msg = '';
+        if (response.status === 0){
+            msg = 'لطفا اتصال اینترنت را بررسی کنید.';
+        }else{
+            msg = 'خطای غیره منتظره‌ای رخ داده.';
+        }
+        toastr.error(msg);
     });
 });
 
@@ -142,8 +164,14 @@ $('.change_password_btn').on('click', function (e) {
         },
         error: function (response) {
             stopLoading();
-            show_error_messages(response);
-            toastr.error('لطفا خطاهای فرم را بررسی کنید.');
+            let msg = '';
+            if (response.status === 0){
+                msg = 'لطفا اتصال اینترنت را بررسی کنید.';
+            }else{
+                show_error_messages(response);
+                msg = 'لطفا خطاهای فرم را بررسی کنید.';
+            }
+            toastr.error(msg);
         }
     });
 });
@@ -185,8 +213,14 @@ $('.login_with_password').on('click', function (e) {
         },
         error: function (response) {
             stopLoading();
-            show_error_messages(response);
-            toastr.error('لطفا خطاهای فرم را بررسی کنید.');
+            let msg = '';
+            if (response.status === 0){
+                msg = 'لطفا اتصال اینترنت را بررسی کنید.';
+            }else{
+                show_error_messages(response);
+                msg = 'لطفا خطاهای فرم را بررسی کنید.';
+            }
+            toastr.error(msg);
         }
     });
 });
@@ -254,8 +288,14 @@ $('.account_login').on('click', function (e) {
         }
     }).fail(function (response) {
         stopLoading();
-        show_error_messages(response);
-        toastr.error('لطفا خطاهای فرم را بررسی کنید.');
+        let msg = '';
+        if(response.status === 0){
+            msg = 'لطفا اتصال اینترنت را بررسی کنید.';
+        }else{
+            show_error_messages(response);
+            msg = 'لطفا خطاهای فرم را بررسی کنید.';
+        }
+        toastr.error(msg);
     });
 });
 
@@ -278,9 +318,15 @@ $('.confirm_email_code').on('click', function (e) {
             show_error_messages(response);
             toastr.error('لطفا خطاهای فرم را بررسی کنید.');
         });
-    }).fail(function (data) {
+    }).fail(function (response) {
         stopLoading();
-        toastr.error('خطای غیره منتظره‌ای رخ داده.');
+        let msg = '';
+        if (response.status === 0){
+            msg = 'لطفا اتصال اینترنت را بررسی کنید.';
+        }else {
+            msg = 'خطای غیره منتظره‌ای رخ داده.';
+        }
+        toastr.error(msg);
     });
 });
 
@@ -308,7 +354,9 @@ function send_email_handler(username, current_page, previous_page) {
     }).fail(function (response) {
         stopLoading();
         let msg = '';
-        if (response.status === 500){
+        if (response.status === 0){
+            msg = 'لطفا اتصال اینترنت را بررسی کنید.';
+        }else if (response.status === 500){
             msg = 'خطایی در ارسال ایمیل رخ داده. لطفا چند دقیقه دیگر دوباره امتحان کنید یا به ما اطلاع دهید.';
         }else {
             show_error_messages(response);
@@ -340,7 +388,9 @@ function send_code_handler(mobile_num, current_page, previous_page) {
     }).fail(function (response) {
         stopLoading();
         let msg = '';
-        if (response.status === 500){
+        if (response.status === 0){
+            msg = 'لطفا اتصال اینترنت را بررسی کنید.';
+        }else if(response.status === 500){
             msg = 'خطایی در ارسال پیامک رخ داده. لطفا چند دقیقه دیگر دوباره امتحان کنید یا به ما اطلاع دهید.';
         }else {
             show_error_messages(response);
@@ -370,9 +420,15 @@ $('.confirm_sms_code').on('click', function (e) {
             show_error_messages(response);
             toastr.error('لطفا خطاهای فرم را بررسی کنید.');
         });
-    }).fail(function () {
+    }).fail(function (response) {
+        let msg = '';
+        if (response.status === 0){
+            msg = 'لطفا اتصال اینترنت را بررسی کنید.';
+        }else{
+            msg = 'خطای غیره منتظره‌ای رخ داده.';
+        }
         stopLoading();
-        toastr.error('خطای غیره منتظره‌ای رخ داده.');
+        toastr.error(msg);
     });
 });
 
@@ -389,10 +445,12 @@ $('.otp_timer').on('click', function (e) {
                 toastr.error(code_result.message);
             }
             stopLoading();
-        }).fail(function () {
+        }).fail(function (response) {
             stopLoading();
             let msg = '';
-            if (response.status === 500){
+            if (response.status === 0){
+                msg = 'لطفا اتصال اینترنت را بررسی کنید.';
+            }else if (response.status === 500){
                 msg = 'خطایی در ارسال پیامک رخ داده. لطفا چند دقیقه دیگر دوباره امتحان کنید یا به ما اطلاع دهید.';
             }else {
                 show_error_messages(response);
@@ -400,9 +458,15 @@ $('.otp_timer').on('click', function (e) {
             }
             toastr.error(msg);
         });
-    }).fail(function () {
+    }).fail(function (response) {
         stopLoading();
-        toastr.error('خطای غیره منتظره‌ای رخ داده.');
+        let msg = '';
+        if (response.status === 0){
+            msg = 'لطفا اتصال اینترنت را بررسی کنید.';
+        }else{
+            msg = 'خطای غیره منتظره‌ای رخ داده.';
+        }
+        toastr.error(msg);
     });
 });
 
