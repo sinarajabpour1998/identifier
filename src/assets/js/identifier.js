@@ -15,6 +15,8 @@ require('lity/dist/lity.min');
 require('jquery-ui/ui/effects/effect-slide');
 
 $(function () {
+    $('[data-toggle="tooltip"]').tooltip();
+
     $('.form-control').on('keydown', function(e){
         if(e.keyCode === 13){
             $(this).closest('.segment').find('.primary-btn').trigger('click');
