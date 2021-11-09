@@ -34,7 +34,6 @@ class IdentifierLoginRepository
             $user = $this->createOrExistUser($mobile);
         }
         if ($this->checkIfLastOtpLogExpired($user) == 'expired'){
-            $this->makeExpireLastOtpLog($user->id);
             $this->sendCode($user,'1', $this->generateOTP());
             return [
                 'status' => 200,
@@ -77,8 +76,8 @@ class IdentifierLoginRepository
 
     protected function sendEmail($user,$otp_code)
     {
-        $user->notify(new SendPasswordEmail($otp_code));
         $this->newOtpLog($otp_code,$user->id);
+        $user->notify(new SendPasswordEmail($otp_code));
     }
 
     public function attempLogin($user)
@@ -351,13 +350,14 @@ class IdentifierLoginRepository
 
     protected function sendCode($user,$templateId,$otp_pass)
     {
+        $this->makeExpireLastOtpLog($user->id);
+        $this->newOtpLog($otp_pass,$user->id);
         \Notifier::userId($user->id)
             ->templateId($templateId)
             ->params(['param1' => $otp_pass])
             ->options(['method' => 'otp','ghasedak_template_name' => 'registration',
                 'hasPassword' => 'yes', 'receiver' => $user->mobile])
             ->send();
-        $this->newOtpLog($otp_pass,$user->id);
     }
 
     protected function generateOTP()
