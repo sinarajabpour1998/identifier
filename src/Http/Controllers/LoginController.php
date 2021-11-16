@@ -15,6 +15,7 @@ use Sinarajabpour1998\Identifier\Http\Requests\ConfirmRecoveryCodeRequest;
 use Sinarajabpour1998\Identifier\Http\Requests\LoginViaEmailOrMobileRequest;
 use Sinarajabpour1998\Identifier\Http\Requests\SendCodeRequest;
 use Sinarajabpour1998\Identifier\Http\Requests\SetCookieRequest;
+use Sinarajabpour1998\LogManager\Facades\LogFacade;
 
 class LoginController extends Controller
 {
@@ -45,6 +46,7 @@ class LoginController extends Controller
             $attempLogin = IdentifierLoginFacade::attempLogin($result->user);
             if ($attempLogin->status == 200){
                 $url = IdentifierLoginFacade::redirectUserUrl($result);
+                LogFacade::generateLog("login");
                 return json_encode([
                     'status' => $result->status,
                     'message' => $result->message,
@@ -52,6 +54,7 @@ class LoginController extends Controller
                 ]);
             }
         }else{
+            LogFacade::generateLog("failed_login", $request->mobile . " : " . $result->message);
             return json_encode([
                 'status' => $result->status,
                 'message' => $result->message,
@@ -134,13 +137,16 @@ class LoginController extends Controller
         $result = (object) array();
         if ($request->type == 'mobile'){
             $result = IdentifierLoginFacade::confirmSMS($request->username, $request->code, 'recovery_mode');
+            LogFacade::generateLog("password_recovery_via_sms", $request->username . " : " . $result->message);
         }
         if ($request->type == 'email'){
             $result = IdentifierLoginFacade::confirmEmail($request->username, $request->code);
+            LogFacade::generateLog("password_recovery_via_email", $request->username . " : " . $result->message);
         }
         if (empty($result)){
             $result->status = 400;
             $result->message = 'کاربر پیدا نشد.';
+            LogFacade::generateLog("failed_recovery", $request->username . " : " . $result->message);
         }
         return json_encode([
             'status' => $result->status,
@@ -156,9 +162,13 @@ class LoginController extends Controller
         if (empty($result)){
             $result->status = 400;
             $result->message = 'کاربر پیدا نشد.';
+            LogFacade::generateLog("failed_login", $request->username . " : " . $result->message);
         }elseif ($result->status == 200){
             $result = IdentifierLoginFacade::loginViaEmail($request->username);
             $url = IdentifierLoginFacade::redirectUserUrl($result);
+            LogFacade::generateLog("login_via_email", $request->username . " : " . $result->message);
+        }else{
+            LogFacade::generateLog("failed_login", $request->username . " : " . $result->message);
         }
         return json_encode([
             'status' => $result->status,
@@ -181,13 +191,16 @@ class LoginController extends Controller
         $result = (object) array();
         if ($type == 'mobile'){
             $result = IdentifierLoginFacade::changePasswordViaMobile($username, $request->new_password);
+            LogFacade::generateLog("password_recovery_via_sms", $username . " : " . $result->message);
         }
         if ($type == 'email'){
             $result = IdentifierLoginFacade::changePasswordViaEmail($username, $request->new_password);
+            LogFacade::generateLog("password_recovery_via_email", $username . " : " . $result->message);
         }
         if (empty($result) || is_null($result)){
             $result->status = 400;
             $result->message = 'کاربر پیدا نشد.';
+            LogFacade::generateLog("failed_recovery", $username . " : " . $result->message);
         }else{
             $url = IdentifierLoginFacade::redirectUserUrl($result);
         }
@@ -208,6 +221,9 @@ class LoginController extends Controller
         $result = IdentifierLoginFacade::loginViaPassword($username,$request->password);
         if ($result->status == 200){
             $url = IdentifierLoginFacade::redirectUserUrl($result);
+            LogFacade::generateLog("login_via_password");
+        }else{
+            LogFacade::generateLog("failed_login", $username . " : " . $result->message);
         }
         return json_encode([
             'status' => $result->status,
