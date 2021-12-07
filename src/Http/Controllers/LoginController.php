@@ -3,6 +3,7 @@
 namespace Sinarajabpour1998\Identifier\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\RateLimiter;
 use Sinarajabpour1998\Identifier\Facades\IdentifierLoginFacade;
 use Sinarajabpour1998\Identifier\Http\Requests\ChangePasswordRequest;
 use Illuminate\Http\Request;
@@ -31,6 +32,14 @@ class LoginController extends Controller
 
     public function sendCode(SendCodeRequest $request)
     {
+        if (!RateLimiter::remaining("send_login_sms_to_user", 1)) {
+            return (object) [
+                'status' => 429,
+                'message' => 'خطا تعداد درخواست بالا. لطفا دقایقی دیگر مجددا امتحان کنید.',
+            ];
+        }else {
+            RateLimiter::hit("send_login_sms_to_user");
+        }
         $result = IdentifierLoginFacade::sendSMS($request->mobile);
         return json_encode([
             'status' => $result['status'],
@@ -113,10 +122,28 @@ class LoginController extends Controller
         $type = 'undefined';
         $message = '';
         if (IdentifierLoginFacade::isMobile($request->username)){
+            if (!RateLimiter::remaining("send_login_sms_to_user_checker", 1)) {
+                return (object) [
+                    'status' => 429,
+                    'type' => 'undefined',
+                    'message' => 'خطا تعداد درخواست بالا. لطفا دقایقی دیگر مجددا امتحان کنید.',
+                ];
+            }else {
+                RateLimiter::hit("send_login_sms_to_user_checker");
+            }
             $type = 'mobile';
             $result = IdentifierLoginFacade::sendSMS($request->username, 'recovery_mode');
         }
         if (IdentifierLoginFacade::isEmail($request->username)){
+            if (!RateLimiter::remaining("send_login_email_to_user:checker", 1)) {
+                return (object) [
+                    'status' => 429,
+                    'type' => 'undefined',
+                    'message' => 'خطا تعداد درخواست بالا. لطفا دقایقی دیگر مجددا امتحان کنید.',
+                ];
+            }else {
+                RateLimiter::hit("send_login_email_to_user:checker");
+            }
             $type = 'email';
             $result = IdentifierLoginFacade::sendConfirmEmail($request->username);
         }
