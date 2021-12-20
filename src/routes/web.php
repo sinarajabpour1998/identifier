@@ -18,10 +18,4 @@ Route::group([
 
     Route::post('/check/registered/user', 'LoginController@checkRegisteredUser')->name('identifier.check.registered.user');
     Route::post('/confirm/email/code', 'LoginController@confirmEmailCode')->name('identifier.confirm.email.code');
-
-    Route::post('/set/cookie', 'LoginController@setCookie')->name('identifier.set.cookie');
-    Route::post('/set/group/cookies', 'LoginController@setCookies')->name('identifier.set.group.cookies');
-    Route::post('/get/cookie', 'LoginController@getCookie')->name('identifier.get.cookie');
-    Route::post('/get/group/cookies', 'LoginController@getCookies')->name('identifier.get.group.cookies');
-    Route::post('/forget/cookie', 'LoginController@forgetCookie')->name('identifier.forget.cookie');
 });

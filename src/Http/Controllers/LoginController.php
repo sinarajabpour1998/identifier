@@ -15,7 +15,6 @@ use Sinarajabpour1998\Identifier\Http\Requests\ConfirmEmailCodeRequest;
 use Sinarajabpour1998\Identifier\Http\Requests\ConfirmRecoveryCodeRequest;
 use Sinarajabpour1998\Identifier\Http\Requests\LoginViaEmailOrMobileRequest;
 use Sinarajabpour1998\Identifier\Http\Requests\SendCodeRequest;
-use Sinarajabpour1998\Identifier\Http\Requests\SetCookieRequest;
 use Sinarajabpour1998\LogManager\Facades\LogFacade;
 
 class LoginController extends Controller
@@ -206,14 +205,8 @@ class LoginController extends Controller
 
     public function changePassword(ChangePasswordRequest $request)
     {
-        if (\request()->cookie('identifier_verified_recovery') != 'user_verified'
-            && is_null(\request()->cookie('identifier_username'))
-            && is_null(\request()->cookie('identifier_recovery_type')))
-        {
-            return redirect(route('identifier.login'));
-        }
-        $type = \request()->cookie('identifier_recovery_type');
-        $username = \request()->cookie('identifier_username');
+        $type = $request->identifier_recovery_type;
+        $username = $request->identifier_username;
         $url = '';
         $result = (object) array();
         if ($type == 'mobile'){
@@ -241,9 +234,10 @@ class LoginController extends Controller
     public function loginWithPassword(Request $request)
     {
         $request->validate([
+            'identifier_username' => ['required', 'string'],
             'password' => ['required', 'min:6']
         ]);
-        $username = \request()->cookie('identifier_username');
+        $username = $request->identifier_username;
         $url = '';
         $result = IdentifierLoginFacade::loginViaPassword($username,$request->password);
         if ($result->status == 200){
@@ -268,47 +262,5 @@ class LoginController extends Controller
         $request->session()->regenerateToken();
 
         return redirect()->route('home');
-    }
-
-    public function setCookie(SetCookieRequest $request){
-        return response()
-            ->json(['success' => true], 200)
-            ->withCookie(cookie($request->cookie_name, $request->cookie_value, 120));
-    }
-
-    public function setCookies(Request $request){
-        $request->validate([
-            're_cookies' => ['required','array']
-        ]);
-        $cookies = array();
-        foreach ($request->re_cookies as $key => $value){
-            \Cookie::queue($key, $value, 30);
-        }
-        return json_encode([
-            'status' => 200
-        ]);
-    }
-
-    public function getCookie(Request $request){
-        $request->validate([
-            'cookie_name' => ['required','string']
-        ]);
-        $value = $request->cookie($request->cookie_name);
-        return json_encode([
-            'cookie' => $value
-        ]);
-    }
-
-    public function getCookies(Request $request){
-        $request->validate([
-            'cookie_names' => ['required','array']
-        ]);
-        $cookies = [];
-        foreach ($request->cookie_names as $cookie_name){
-            $cookies[$cookie_name] = $request->cookie($cookie_name);
-        }
-        return json_encode([
-            'cookies' => $cookies
-        ]);
     }
 }

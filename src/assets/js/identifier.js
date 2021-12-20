@@ -26,6 +26,9 @@ $(function () {
 
 const previous_pages = [];
 const url_address = new URL(window.location.href);
+let identifier_username = '';
+let identifier_recovery_type = '';
+let identifier_verified_recovery = '';
 
 // forgot password handler
 $('.open_recovery_not_reg').on('click', function (e) {
@@ -44,21 +47,15 @@ $('.forget_action').on('click', function (e) {
     let username_input = $('.mobile_or_email').val();
     sendEmailOrSMS(username_input).done(function (response) {
         if (response.status === 200){
-            setGroupCookies({
-                'identifier_username': username_input,
-                'identifier_recovery_type': response.type
-            }).done(function (data) {
-                if (response.status === 200){
-                    $('.user_info').html('('+ username_input +')');
-                    send_otp($('.recovery_timer'));
-                    toastr.success(response.message);
-                    openRecoveryCodePage('recovery_code', 'recovery');
-                }
-                stopLoading();
-            }).fail(function () {
-                stopLoading();
-                toastr.error('خطای غیره منتظره‌ای رخ داده.');
-            });
+            identifier_username = username_input;
+            identifier_recovery_type = response.type;
+            if (response.status === 200){
+                $('.user_info').html('('+ username_input +')');
+                send_otp($('.recovery_timer'));
+                toastr.success(response.message);
+                openRecoveryCodePage('recovery_code', 'recovery');
+            }
+            stopLoading();
         }else {
             stopLoading();
             show_error_messages(response);
@@ -80,27 +77,22 @@ $('.forget_action').on('click', function (e) {
 $('.recovery_timer').on('click', function (e) {
     e.preventDefault();
     startLoading();
-    getCookie('identifier_username').done(function (data) {
-        sendEmailOrSMS(data.cookie).done(function (response) {
-            stopLoading();
-            if (response.status === 200){
-                send_otp($('.recovery_timer'));
-                toastr.success(response.message);
-            }else {
-                toastr.error(response.message);
-            }
-        }).fail(function () {
-            stopLoading();
-            show_error_messages(response);
-            toastr.error('لطفا خطاهای فرم را بررسی کنید.');
-        });
+    sendEmailOrSMS(identifier_username).done(function (response) {
+        stopLoading();
+        if (response.status === 200){
+            send_otp($('.recovery_timer'));
+            toastr.success(response.message);
+        }else {
+            toastr.error(response.message);
+        }
     }).fail(function (response) {
         stopLoading();
         let msg = '';
         if (response.status === 0){
             msg = 'لطفا اتصال اینترنت را بررسی کنید.';
         }else{
-            msg = 'خطای غیره منتظره‌ای رخ داده.';
+            msg = 'لطفا خطاهای فرم را بررسی کنید.';
+            show_error_messages(response);
         }
         toastr.error(msg);
     });
@@ -110,34 +102,26 @@ $('.confirm_recovery_code').on('click', function (e) {
     e.preventDefault();
     startLoading();
     let confirm_code = $('.recovery_code_input').val();
-    getGroupCookies(['identifier_username', 'identifier_recovery_type']).done(function (data) {
-        confirmRecoveryCode(data.cookies.identifier_username,
-            confirm_code, data.cookies.identifier_recovery_type)
-            .done(function (code_result) {
-                hide_error_messages();
-                if (code_result.status === 200){
-                    setCookie('identifier_verified_recovery', 'user_verified').done(function () {
-                        openChangePasswordPage('change_password', 'recovery_code');
-                    }).fail(function () {
-                        stopLoading();
-                        toastr.error('خطای غیره منتظره‌ای رخ داده.');
-                    });
-                }else {
-                    toastr.error(code_result.message);
-                    stopLoading();
-                }
-            }).fail(function (response) {
-            stopLoading();
-            show_error_messages(response);
-            toastr.error('لطفا خطاهای فرم را بررسی کنید.');
-        });
-    }).fail(function (response) {
+
+    confirmRecoveryCode(identifier_username,
+        confirm_code, identifier_recovery_type)
+        .done(function (code_result) {
+            hide_error_messages();
+            if (code_result.status === 200){
+                identifier_verified_recovery = 'user_verified';
+                openChangePasswordPage('change_password', 'recovery_code');
+            }else {
+                toastr.error(code_result.message);
+                stopLoading();
+            }
+        }).fail(function (response) {
         stopLoading();
         let msg = '';
         if (response.status === 0){
             msg = 'لطفا اتصال اینترنت را بررسی کنید.';
         }else{
-            msg = 'خطای غیره منتظره‌ای رخ داده.';
+            msg = 'لطفا خطاهای فرم را بررسی کنید.';
+            show_error_messages(response);
         }
         toastr.error(msg);
     });
@@ -154,7 +138,9 @@ $('.change_password_btn').on('click', function (e) {
         dataType: 'json',
         data: {
             'new_password': new_pass,
-            'password_confirm': confirm_new_pass
+            'password_confirm': confirm_new_pass,
+            'identifier_recovery_type': identifier_recovery_type,
+            'identifier_username': identifier_username
         },
         success: function (response) {
             if (response.status === 200){
@@ -182,6 +168,7 @@ function openRecoveryPage(current_page,previous_page) {
     change_url('','','/auth/recovery');
     slide_element(previous_page, current_page);
     previous_pages.push(previous_page);
+    $('.mobile_or_email').focus();
 }
 
 $('.login_via_password').on('click', function (e) {
@@ -203,6 +190,7 @@ $('.login_with_password').on('click', function (e) {
         url: baseUrl + getFullUrl('/auth/login/password'),
         dataType: 'json',
         data: {
+            'identifier_username': identifier_username,
             'password': password_input,
         },
         success: function (response) {
@@ -231,12 +219,14 @@ function openPasswordPage(current_page,previous_page) {
     change_url('','','/auth/password');
     slide_element(previous_page, current_page);
     previous_pages.push(previous_page);
+    $('.password_input').focus();
 }
 
 function openRecoveryCodePage(current_page,previous_page) {
     change_url('','','/auth/recovery_code');
     slide_element(previous_page, current_page);
     previous_pages.push(previous_page);
+    $('.recovery_code_input').focus();
 }
 
 function openChangePasswordPage(current_page,previous_page) {
@@ -252,41 +242,38 @@ $('.create_account').on('click', function (e) {
     change_url('','','/auth/register');
     slide_element('default', 'register');
     previous_pages.push('default');
+    $('.register_mobile').focus();
 });
 
 $('.account_login').on('click', function (e) {
     e.preventDefault();
     startLoading();
-    var username = $('.username_input').val();
-    alreadyRegisteredUsername(username).done(function (data) {
+    let username = $('.username_input').val();
+    alreadyRegisteredUsername(username).done(function (res) {
         hide_error_messages();
-        if (data.status === 200){
-            setCookie('identifier_username', username).done(function () {
-                if (data.registeration_status === 'not_registered'){
-                    if (data.type === 'mobile'){
-                        $('.mobile_num').html(username);
-                        $('.not_registered_mobile').val(username);
-                        change_url('','','/auth/not_registered');
-                        slide_element('default', 'not_registered');
-                        previous_pages.push('default');
-                    }else {
-                        toastr.error('این ایمیل درسیستم ثبت نشده.');
-                    }
-                    stopLoading();
+        if (res.status === 200){
+            identifier_username = username;
+            if (res.registeration_status === 'not_registered'){
+                if (res.type === 'mobile'){
+                    $('.mobile_num').html(username);
+                    $('.not_registered_mobile').val(username);
+                    change_url('','','/auth/not_registered');
+                    slide_element('default', 'not_registered');
+                    previous_pages.push('default');
                 }else {
-                    if (data.type === 'mobile'){
-                        send_code_handler(username, 'code', 'default');
-                    }else {
-                        send_email_handler(username, 'email_code', 'default');
-                    }
+                    toastr.error('این ایمیل درسیستم ثبت نشده.');
                 }
-            }).fail(function () {
                 stopLoading();
-                toastr.error('خطای غیره منتظره‌ای رخ داده.');
-            });
+            }else {
+                if (res.type === 'mobile'){
+                    send_code_handler(username, 'code', 'default');
+                }else {
+                    send_email_handler(username, 'email_code', 'default');
+                }
+            }
         }else {
             stopLoading();
-            toastr.error(data.message);
+            toastr.error(res.message);
         }
     }).fail(function (response) {
         stopLoading();
@@ -305,30 +292,26 @@ $('.confirm_email_code').on('click', function (e) {
     e.preventDefault();
     startLoading();
     let confirm_code = $('.email_code_input').val();
-    getCookie('identifier_username').done(function (data) {
-        confirmEmailCode(data.cookie, confirm_code)
-            .done(function (code_result) {
-                hide_error_messages();
-                if (code_result.status === 200){
-                    window.location = code_result.url;
-                }else {
-                    toastr.error(code_result.message);
-                    stopLoading();
-                }
-            }).fail(function (response) {
-            stopLoading();
-            show_error_messages(response);
-            toastr.error('لطفا خطاهای فرم را بررسی کنید.');
-        });
-    }).fail(function (response) {
+    confirmEmailCode(identifier_username, confirm_code)
+        .done(function (code_result) {
+            hide_error_messages();
+            if (code_result.status === 200){
+                window.location = code_result.url;
+            }else {
+                toastr.error(code_result.message);
+                stopLoading();
+            }
+        }).fail(function (response) {
         stopLoading();
         let msg = '';
-        if (response.status === 0){
+        if(response.status === 0){
             msg = 'لطفا اتصال اینترنت را بررسی کنید.';
-        }else {
-            msg = 'خطای غیره منتظره‌ای رخ داده.';
+        }else{
+            show_error_messages(response);
+            msg = 'لطفا خطاهای فرم را بررسی کنید.';
         }
         toastr.error(msg);
+
     });
 });
 
@@ -370,23 +353,20 @@ function send_email_handler(username, current_page, previous_page) {
 
 function send_code_handler(mobile_num, current_page, previous_page) {
     sendCode(mobile_num).done(function (code_result) {
-        setCookie('identifier_username', mobile_num).done(function () {
-            if (code_result.status === 200){
-                send_otp($('.otp_timer'));
-                toastr.success(code_result.message);
-                $('.mobile_num').html('(' + mobile_num + ')');
-                stopLoading();
-                change_url('','','/auth/code');
-                slide_element(previous_page, current_page);
-                previous_pages.push(previous_page);
-            }else {
-                stopLoading();
-                toastr.error(code_result.message);
-            }
-        }).fail(function () {
+        identifier_username = mobile_num;
+        if (code_result.status === 200){
+            send_otp($('.otp_timer'));
+            toastr.success(code_result.message);
+            $('.mobile_num').html('(' + mobile_num + ')');
             stopLoading();
-            toastr.error('خطای غیره منتظره‌ای رخ داده.');
-        });
+            change_url('','','/auth/code');
+            slide_element(previous_page, current_page);
+            previous_pages.push(previous_page);
+            $('.user_input_code').focus();
+        }else {
+            stopLoading();
+            toastr.error(code_result.message);
+        }
     }).fail(function (response) {
         stopLoading();
         let msg = '';
@@ -406,30 +386,23 @@ $('.confirm_sms_code').on('click', function (e) {
     e.preventDefault();
     startLoading();
     let confirm_code = $('.user_input_code').val();
-    let mobile = '';
-    getCookie('identifier_username').done(function (data) {
-        mobile = data.cookie;
-        confirmCode(mobile, confirm_code).done(function (code_result) {
-            hide_error_messages();
-            if (code_result.status === 200){
-                window.location = code_result.url;
-            }else {
-                toastr.error(code_result.message);
-                stopLoading();
-            }
-        }).fail(function (response) {
+    confirmCode(identifier_username, confirm_code).done(function (code_result) {
+        hide_error_messages();
+        if (code_result.status === 200){
+            window.location = code_result.url;
+        }else {
+            toastr.error(code_result.message);
             stopLoading();
-            show_error_messages(response);
-            toastr.error('لطفا خطاهای فرم را بررسی کنید.');
-        });
+        }
     }).fail(function (response) {
+        stopLoading();
         let msg = '';
         if (response.status === 0){
             msg = 'لطفا اتصال اینترنت را بررسی کنید.';
-        }else{
-            msg = 'خطای غیره منتظره‌ای رخ داده.';
+        }else {
+            show_error_messages(response);
+            msg = 'لطفا خطاهای فرم را بررسی کنید.';
         }
-        stopLoading();
         toastr.error(msg);
     });
 });
@@ -437,36 +410,25 @@ $('.confirm_sms_code').on('click', function (e) {
 $('.otp_timer').on('click', function (e) {
     e.preventDefault();
     startLoading();
-    getCookie('identifier_username').done(function (data) {
-        sendCode(data.cookie).done(function (code_result) {
-            hide_error_messages();
-            if (code_result.status === 200){
-                send_otp($('.otp_timer'));
-                toastr.success(code_result.message);
-            }else {
-                toastr.error(code_result.message);
-            }
-            stopLoading();
-        }).fail(function (response) {
-            stopLoading();
-            let msg = '';
-            if (response.status === 0){
-                msg = 'لطفا اتصال اینترنت را بررسی کنید.';
-            }else if (response.status === 500){
-                msg = 'خطایی در ارسال پیامک رخ داده. لطفا چند دقیقه دیگر دوباره امتحان کنید یا به ما اطلاع دهید.';
-            }else {
-                show_error_messages(response);
-                msg = 'لطفا خطاهای فرم را بررسی کنید.';
-            }
-            toastr.error(msg);
-        });
-    }).fail(function (response) {
+    sendCode(identifier_username).done(function (code_result) {
+        hide_error_messages();
+        if (code_result.status === 200){
+            send_otp($('.otp_timer'));
+            toastr.success(code_result.message);
+        }else {
+            toastr.error(code_result.message);
+        }
+        stopLoading();
+    }).fail(function (res) {
         stopLoading();
         let msg = '';
-        if (response.status === 0){
+        if (res.status === 0){
             msg = 'لطفا اتصال اینترنت را بررسی کنید.';
-        }else{
-            msg = 'خطای غیره منتظره‌ای رخ داده.';
+        }else if (res.status === 500){
+            msg = 'خطایی در ارسال پیامک رخ داده. لطفا چند دقیقه دیگر دوباره امتحان کنید یا به ما اطلاع دهید.';
+        }else {
+            show_error_messages(res);
+            msg = 'لطفا خطاهای فرم را بررسی کنید.';
         }
         toastr.error(msg);
     });
@@ -492,7 +454,26 @@ $('.back-btn').on('click', function (e) {
         back_slide_element(page_type, perv_page);
         hide_error_messages();
     }
+    setFocusOnBack(page_type);
 });
+
+const setFocusOnBack = (page_type) => {
+    switch (page_type) {
+        case 'code':
+        case 'recovery':
+        case 'register':
+            $('.username_input').focus();
+            break;
+        case 'password':
+            $('.user_input_code').focus();
+            break;
+        case 'recovery_code':
+            $('mobile_or_email').focus();
+            break;
+        default:
+            return;
+    }
+}
 
 // start helper functions
 
@@ -573,17 +554,6 @@ function sendCode(mobile_field) {
     });
 }
 
-function checkUser(mobile_field) {
-    return $.ajax({
-        type: "post",
-        url: baseUrl + '/auth/check/mobile',
-        dataType: 'json',
-        data: {
-            'mobile': mobile_field
-        }
-    });
-}
-
 function alreadyRegisteredUsername(user_field) {
     return $.ajax({
         type: "post",
@@ -591,65 +561,6 @@ function alreadyRegisteredUsername(user_field) {
         dataType: 'json',
         data: {
             'username_input': user_field
-        }
-    });
-}
-
-function setCookie(cookieName,cookieValue) {
-    return $.ajax({
-        type: "post",
-        url: baseUrl + '/auth/set/cookie',
-        dataType: 'json',
-        data: {
-            'cookie_name': cookieName,
-            'cookie_value': cookieValue
-        }
-    });
-}
-
-function setGroupCookies(cookies_array) {
-    return $.ajax({
-        type: "post",
-        url: baseUrl + '/auth/set/group/cookies',
-        dataType: 'json',
-        data: {
-            're_cookies': cookies_array
-        }
-    });
-}
-
-function getCookie(cookieName) {
-    return $.ajax({
-        type: "post",
-        url: baseUrl + '/auth/get/cookie',
-        dataType: 'json',
-        data: {
-            'cookie_name': cookieName
-        }
-    });
-}
-
-function getGroupCookies(cookieNames) {
-    return $.ajax({
-        type: "post",
-        url: baseUrl + '/auth/get/group/cookies',
-        dataType: 'json',
-        data: {
-            'cookie_names': cookieNames
-        }
-    });
-}
-
-function forgetCookie(cookieName) {
-    $.ajax({
-        type: "post",
-        url: baseUrl + '/auth/forget/cookie',
-        dataType: 'json',
-        data: {
-            'cookie_name': cookieName
-        },
-        success: function () {
-            stopLoading();
         }
     });
 }
