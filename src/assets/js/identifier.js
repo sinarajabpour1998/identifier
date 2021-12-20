@@ -66,6 +66,8 @@ $('.forget_action').on('click', function (e) {
         let msg = '';
         if (response.status === 0){
             msg = 'لطفا اتصال اینترنت را بررسی کنید.';
+        }else if (response.status === 429){
+            msg = 'خطا تعداد درخواست بالا. لطفا دقایقی دیگر مجددا امتحان کنید.';
         }else{
             show_error_messages(response);
             msg = 'لطفا خطاهای فرم را بررسی کنید.';
@@ -90,6 +92,8 @@ $('.recovery_timer').on('click', function (e) {
         let msg = '';
         if (response.status === 0){
             msg = 'لطفا اتصال اینترنت را بررسی کنید.';
+        }else if (response.status === 429){
+            msg = 'خطا تعداد درخواست بالا. لطفا دقایقی دیگر مجددا امتحان کنید.';
         }else{
             msg = 'لطفا خطاهای فرم را بررسی کنید.';
             show_error_messages(response);
@@ -119,6 +123,8 @@ $('.confirm_recovery_code').on('click', function (e) {
         let msg = '';
         if (response.status === 0){
             msg = 'لطفا اتصال اینترنت را بررسی کنید.';
+        }else if (response.status === 429){
+            msg = 'خطا تعداد درخواست بالا. لطفا دقایقی دیگر مجددا امتحان کنید.';
         }else{
             msg = 'لطفا خطاهای فرم را بررسی کنید.';
             show_error_messages(response);
@@ -155,6 +161,8 @@ $('.change_password_btn').on('click', function (e) {
             let msg = '';
             if (response.status === 0){
                 msg = 'لطفا اتصال اینترنت را بررسی کنید.';
+            }else if (response.status === 429){
+                msg = 'خطا تعداد درخواست بالا. لطفا دقایقی دیگر مجددا امتحان کنید.';
             }else{
                 show_error_messages(response);
                 msg = 'لطفا خطاهای فرم را بررسی کنید.';
@@ -206,6 +214,8 @@ $('.login_with_password').on('click', function (e) {
             let msg = '';
             if (response.status === 0){
                 msg = 'لطفا اتصال اینترنت را بررسی کنید.';
+            }else if (response.status === 429){
+                msg = 'خطا تعداد درخواست بالا. لطفا دقایقی دیگر مجددا امتحان کنید.';
             }else{
                 show_error_messages(response);
                 msg = 'لطفا خطاهای فرم را بررسی کنید.';
@@ -280,6 +290,8 @@ $('.account_login').on('click', function (e) {
         let msg = '';
         if(response.status === 0){
             msg = 'لطفا اتصال اینترنت را بررسی کنید.';
+        }else if (response.status === 429){
+            msg = 'خطا تعداد درخواست بالا. لطفا دقایقی دیگر مجددا امتحان کنید.';
         }else{
             show_error_messages(response);
             msg = 'لطفا خطاهای فرم را بررسی کنید.';
@@ -306,6 +318,8 @@ $('.confirm_email_code').on('click', function (e) {
         let msg = '';
         if(response.status === 0){
             msg = 'لطفا اتصال اینترنت را بررسی کنید.';
+        }else if (response.status === 429){
+            msg = 'خطا تعداد درخواست بالا. لطفا دقایقی دیگر مجددا امتحان کنید.';
         }else{
             show_error_messages(response);
             msg = 'لطفا خطاهای فرم را بررسی کنید.';
@@ -343,6 +357,8 @@ function send_email_handler(username, current_page, previous_page) {
             msg = 'لطفا اتصال اینترنت را بررسی کنید.';
         }else if (response.status === 500){
             msg = 'خطایی در ارسال ایمیل رخ داده. لطفا چند دقیقه دیگر دوباره امتحان کنید یا به ما اطلاع دهید.';
+        }else if (response.status === 429){
+            msg = 'خطا تعداد درخواست بالا. لطفا دقایقی دیگر مجددا امتحان کنید.';
         }else {
             show_error_messages(response);
             msg = 'خطای غیره منتظره‌ای رخ داده.';
@@ -374,6 +390,8 @@ function send_code_handler(mobile_num, current_page, previous_page) {
             msg = 'لطفا اتصال اینترنت را بررسی کنید.';
         }else if(response.status === 500){
             msg = 'خطایی در ارسال پیامک رخ داده. لطفا چند دقیقه دیگر دوباره امتحان کنید یا به ما اطلاع دهید.';
+        }else if (response.status === 429){
+            msg = 'خطا تعداد درخواست بالا. لطفا دقایقی دیگر مجددا امتحان کنید.';
         }else {
             show_error_messages(response);
             msg = 'لطفا خطاهای فرم را بررسی کنید.';
@@ -399,6 +417,8 @@ $('.confirm_sms_code').on('click', function (e) {
         let msg = '';
         if (response.status === 0){
             msg = 'لطفا اتصال اینترنت را بررسی کنید.';
+        }else if (response.status === 429){
+            msg = 'خطا تعداد درخواست بالا. لطفا دقایقی دیگر مجددا امتحان کنید.';
         }else {
             show_error_messages(response);
             msg = 'لطفا خطاهای فرم را بررسی کنید.';
@@ -426,6 +446,8 @@ $('.otp_timer').on('click', function (e) {
             msg = 'لطفا اتصال اینترنت را بررسی کنید.';
         }else if (res.status === 500){
             msg = 'خطایی در ارسال پیامک رخ داده. لطفا چند دقیقه دیگر دوباره امتحان کنید یا به ما اطلاع دهید.';
+        }else if (res.status === 429){
+            msg = 'خطا تعداد درخواست بالا. لطفا دقایقی دیگر مجددا امتحان کنید.';
         }else {
             show_error_messages(res);
             msg = 'لطفا خطاهای فرم را بررسی کنید.';
