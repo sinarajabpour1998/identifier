@@ -22,6 +22,12 @@ $(function () {
             $(this).closest('.segment').find('.primary-btn').trigger('click');
         }
     });
+    $('.recovery_new_password_confirm').on('keydown', function(e){
+        if(e.keyCode === 13){
+            $(this).closest('.segment').find('.change_password_btn').trigger('click');
+        }
+    });
+    $('.username_input').focus();
 });
 
 const previous_pages = [];
@@ -244,6 +250,7 @@ function openChangePasswordPage(current_page,previous_page) {
     slide_element(previous_page, current_page);
     previous_pages.push(previous_page);
     stopLoading();
+    $('.recovery_new_password').focus();
 }
 
 // login and register handler

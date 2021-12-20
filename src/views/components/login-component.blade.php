@@ -220,6 +220,8 @@
                                                 </span>
                                         </button>
                                     </div>
+                                    <br>
+                                    <p>لطفا پوشه spam را نیز بررسی کنید.</p>
                                 </div>
                             </div>
                         </div>
