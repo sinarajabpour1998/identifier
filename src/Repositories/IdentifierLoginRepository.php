@@ -5,6 +5,7 @@ namespace Sinarajabpour1998\Identifier\Repositories;
 
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Cookie;
 use Sinarajabpour1998\Identifier\Models\IdentifierOtpCode;
 use Sinarajabpour1998\Identifier\Notifications\Email\SendPasswordEmail;
 use Illuminate\Support\Facades\Auth;
@@ -82,7 +83,7 @@ class IdentifierLoginRepository
 
     public function attempLogin($user)
     {
-        if (Auth::loginUsingId($user->id)){
+        if (Auth::loginUsingId($user->id, true)){
             return (object) [
                 'status' => 200,
                 'message' => "باموفقیت وارد شدید"
@@ -117,7 +118,6 @@ class IdentifierLoginRepository
         $code_status = $this->checkIfOtpLogExpired($code,$user->mobile,$user);
         if ($code_status == 'not_expired'){
             $this->verifyUser($user);
-            $this->forgetAllCookies();
             $this->makeExpireLastOtpLog($user->id);
             return (object) [
                 'status' => 200,
@@ -172,20 +172,12 @@ class IdentifierLoginRepository
         }
     }
 
-    protected function forgetAllCookies()
-    {
-        $this->forgetCookie(\request()->cookie('identifier_verified_recovery'));
-        $this->forgetCookie(\request()->cookie('identifier_username'));
-        $this->forgetCookie(\request()->cookie('identifier_recovery_type'));
-    }
-
     public function changePasswordViaMobile($username, $new_password)
     {
         $checkUser = $this->existUserMobile($username);
         if ($checkUser->status == 200){
             $this->updateUserPassword($new_password,$checkUser->user);
             $this->attempLogin($checkUser->user);
-            $this->forgetAllCookies();
             $this->makeExpireLastOtpLog($checkUser->user->id);
             return (object) [
                 'user' => $checkUser->user,
@@ -205,7 +197,6 @@ class IdentifierLoginRepository
         $checkUser = $this->existUserEmail($username);
         if ($checkUser->status == 200){
             $this->attempLogin($checkUser->user);
-            $this->forgetAllCookies();
             $this->makeExpireLastOtpLog($checkUser->user->id);
             return (object) [
                 'user' => $checkUser->user,
@@ -226,7 +217,6 @@ class IdentifierLoginRepository
         if ($checkUser->status == 200){
             $this->updateUserPassword($new_password,$checkUser->user);
             $this->attempLogin($checkUser->user);
-            $this->forgetAllCookies();
             $this->makeExpireLastOtpLog($checkUser->user->id);
             return (object) [
                 'user' => $checkUser->user,
@@ -260,8 +250,7 @@ class IdentifierLoginRepository
             if(Auth::attempt([
                 $type => $username,
                 'password' => $password
-            ])){
-                $this->forgetAllCookies();
+            ], true)){
                 $this->makeExpireLastOtpLog($checkUser->user->id);
                 return (object) [
                     'user' => $checkUser->user,
