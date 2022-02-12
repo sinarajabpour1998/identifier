@@ -343,9 +343,8 @@ class IdentifierLoginRepository
         $this->newOtpLog($otp_pass,$user->id);
         \Notifier::userId($user->id)
             ->templateId($templateId)
-            ->params(['param1' => $otp_pass])
-            ->options(['method' => 'otp','ghasedak_template_name' => 'registration',
-                'hasPassword' => 'yes', 'receiver' => $user->mobile])
+            ->params(['param1' => $otp_pass, 'param2' => config('identifier.site_title')])
+            ->options(['method' => 'otp', 'hasPassword' => 'yes', 'receiver' => $user->mobile])
             ->send();
     }
 
